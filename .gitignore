@@ -1,0 +1,10 @@
+# Runtime / generated files
+inventory_db.json
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+
+# Editor settings
+.vscode/
