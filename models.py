@@ -10,7 +10,7 @@ ALLOWED_STATUSES = ["IN_STOCK", "IN_USE", "QUARANTINED", "DISPOSED"]
 class Component:
      
     # Initialize component with attributes.
-    def _init_(self, component_id: str, name: str, quantity: int, threshold: int, status: str, tags: List[str]):
+    def __init__(self, component_id, name, quantity, threshold, status, tags):
         self.component_id = component_id
         self.name = name
         self.quantity = quantity
@@ -49,7 +49,7 @@ class Component:
 class LogEntry:
 
     # Initialize log entry with attributes.
-    def _init_(self, timestamp: str, component_id: str, action: str, details: str):
+    def __init__(self, timestamp: str, component_id: str, action: str, details: str):
         self.timestamp = timestamp
         self.component_id = component_id
         self.action = action
@@ -84,7 +84,7 @@ class LogEntry:
 class Inventory:
 
     # Initialize inventory with empty components and logs.
-    def _init_(self):
+    def __init__(self):
         # Dict for fast lookup by component_id.
         self.components: Dict[str, Component] = {}
         self.logs: List[LogEntry] = []
