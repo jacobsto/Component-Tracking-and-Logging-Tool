@@ -22,13 +22,6 @@ def require_min(value: int, minimum: int, field_name: str) -> int:
         raise ValidationError(f"{field_name} must be at least >= {minimum}.")
     return value
 
-# Validate status against allowed values.
-def validate_status(status: str) -> str:
-    raw = require_non_empty(text, "Status").upper()
-    if raw not in ALLOWED_STATUSES:
-        raise ValidationError(f"Status must be one of: {', '.join(ALLOWED_STATUSES)}.")
-    return raw
-
 # Parse comma-separated tags into a list.
 def parse_tags(text: str) -> list:
     if text is None or text.strip() == "":

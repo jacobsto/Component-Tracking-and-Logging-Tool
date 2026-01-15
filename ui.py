@@ -17,7 +17,6 @@ from validators import ( # imports from validators.py
     require_non_empty,
     to_int,
     require_min,
-    validate_status,
 )
 
 # Display the main menu options.
@@ -36,9 +35,9 @@ def ask(prompt: str) -> str:
     return input(prompt).strip()
 
 # Prompt user for integer input with optional minimum constraint.
-def ask_int(promt: str, field_name: str, minimum: int = None) -> int:
+def ask_int(prompt: str, field_name: str, minimum: int = None) -> int:
     while True:
-        raw = ask(promt)
+        raw = ask(prompt)
         try:
             value = to_int(raw, field_name)
             if minimum is not None:
@@ -47,27 +46,40 @@ def ask_int(promt: str, field_name: str, minimum: int = None) -> int:
         except ValidationError as ex:
             print(f"Input error: {ex}")
 
+# Let user choose a status from allowed statuses.
+def choose_status() -> str:
+    print("Select Status:")
+    for i, status in enumerate(ALLOWED_STATUSES, start=1):
+        print(f"{i}. {status}")
+
+        choice = ask_int("Enter status number: ", "Status choice", minimum=1)
+    
+    while choice > len(ALLOWED_STATUSES):
+        print(f"Invalid choice. Please select a number between 1 and {len(ALLOWED_STATUSES)}.")
+        choice = ask_int("Enter status number: ", "Status choice", minimum=1)
+
+    return ALLOWED_STATUSES[choice - 1]
+
 # Handle adding a new component.
 def handle_add(inv: Inventory) -> None:
     try:
-        cid = require_non_empty(ask("Component ID: "), "Component ID")
         name = require_non_empty(ask("Name: "), "Name")
         quantity = ask_int("Quantity (>=0): ", "Quantity", minimum=0)
         threshold = ask_int("Reorder Threshold (>=0): ", "Reorderhreshold", minimum=0)
-        status = validate_status(ask(f"Status ({', '.join(ALLOWED_STATUSES)}): "))
+        status = choose_status()
         tags = parse_tags(ask("Tags (comma-separated, optional): "))
         
-        comp = Component(cid, name, quantity, threshold, status, tags)
+        comp = Component(name, quantity, threshold, status, tags)
         add_component(inv, comp)
-        print(f"Component '{cid}' added successfully.")
+        print(f"Component '{comp.component_id}' added successfully.")
     except AppError as ex:
         print(f"Error: {ex}")
 
 # Handle updating component status.
 def handle_status(inv: Inventory) -> None:
     try:
-        cid = require_non_empty(ask("Component ID: "), "Component ID")
-        status = validate_status(ask(f"New Status {ALLOWED_STATUSES}: "))
+        cid = ask_int("Component ID: ", "Component ID", minimum=1)
+        status = choose_status()
         update_status(inv, cid, status)
         print(f"Component '{cid}' status updated to '{status}'.")
     except AppError as ex:
@@ -76,7 +88,7 @@ def handle_status(inv: Inventory) -> None:
 # Handle adjusting component quantity.
 def handle_adjust(inv: Inventory) -> None:
     try:
-        cid = require_non_empty(ask("Component ID: "), "Component ID")
+        cid = ask_int("Component ID: ", "Component ID", minimum=1)
         delta = to_int(ask("Quantity Adjustment (positive or negative): "), "Quantity Adjustment")
         reason = require_non_empty(ask("Reason for adjustment: "), "Reason")
         adjust_quantity(inv, cid, delta, reason)
