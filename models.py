@@ -8,10 +8,14 @@ ALLOWED_STATUSES = ["IN_STOCK", "IN_USE", "QUARANTINED", "DISPOSED"]
 
 # Component model representing an inventory item.
 class Component:
+
+    # Class variable to track last used ID.
+    _last_id = 0
      
     # Initialize component with attributes.
     def __init__(self, component_id, name, quantity, threshold, status, tags):
-        self.component_id = component_id
+        Component._last_id += 1
+        self.component_id = Component._last_id
         self.name = name
         self.quantity = quantity
         self.threshold = threshold
