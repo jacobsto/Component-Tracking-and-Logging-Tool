@@ -41,13 +41,16 @@ class Component:
     # Create component from dictionary data.
     def from_dict(data: dict) -> "Component":
         return Component(
-            component_id=data["component_id"],
             name=data["name"],
             quantity=int(data["quantity"]),
             threshold=int(data["threshold"]),
             status=data["status"],
             tags=list(data.get("tags", [])),
         )
+        component.component_id = int(data["component_id"])
+        if component.component_id > Component._last_id:
+            Component._last_id = component.component_id
+        return component
     
 # Log entry for actions taken on components.
 class LogEntry:
