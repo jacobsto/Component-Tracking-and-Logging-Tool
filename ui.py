@@ -11,6 +11,7 @@ from services import ( # imports from services.py
     recent_logs,
     replenishment_list,
     update_status,
+    get_component,
 )
 from validators import ( # imports from validators.py
     parse_tags,
@@ -46,13 +47,21 @@ def ask_int(prompt: str, field_name: str, minimum: int = None) -> int:
         except ValidationError as ex:
             print(f"Input error: {ex}")
 
+def ask_non_empty(prompt: str, field_name: str) -> str:
+    while True:
+        raw = ask(prompt)
+        try:
+            return require_non_empty(raw, field_name)
+        except ValidationError as ex:
+            print(f"Input error: {ex}")
+
 # Let user choose a status from allowed statuses.
 def choose_status() -> str:
     print("Select Status:")
     for i, status in enumerate(ALLOWED_STATUSES, start=1):
         print(f"{i}. {status}")
 
-        choice = ask_int("Enter status number: ", "Status choice", minimum=1)
+    choice = ask_int("Enter status number: ", "Status choice", minimum=1)
     
     while choice > len(ALLOWED_STATUSES):
         print(f"Invalid choice. Please select a number between 1 and {len(ALLOWED_STATUSES)}.")
@@ -63,7 +72,7 @@ def choose_status() -> str:
 # Handle adding a new component.
 def handle_add(inv: Inventory) -> None:
     try:
-        name = require_non_empty(ask("Name: "), "Name")
+        name = ask_non_empty("Name: ", "Name")
         quantity = ask_int("Quantity (>=0): ", "Quantity", minimum=0)
         threshold = ask_int("Reorder Threshold (>=0): ", "Reorderhreshold", minimum=0)
         status = choose_status()
@@ -79,6 +88,8 @@ def handle_add(inv: Inventory) -> None:
 def handle_status(inv: Inventory) -> None:
     try:
         cid = ask_int("Component ID: ", "Component ID", minimum=1)
+        comp = get_component(inv, cid)
+        print(f"Found Component: {comp.name} (current status: {comp.status})")
         status = choose_status()
         update_status(inv, cid, status)
         print(f"Component '{cid}' status updated to '{status}'.")
@@ -89,8 +100,10 @@ def handle_status(inv: Inventory) -> None:
 def handle_adjust(inv: Inventory) -> None:
     try:
         cid = ask_int("Component ID: ", "Component ID", minimum=1)
+        comp = get_component(inv, cid)
+        print(f"Found Component: {comp.name} (current quantity: {comp.quantity})")
         delta = to_int(ask("Quantity Adjustment (positive or negative): "), "Quantity Adjustment")
-        reason = require_non_empty(ask("Reason for adjustment: "), "Reason")
+        reason = ask_non_empty("Reason for adjustment: ", "Reason")
         adjust_quantity(inv, cid, delta, reason)
         
         comp = inv.components[cid]
