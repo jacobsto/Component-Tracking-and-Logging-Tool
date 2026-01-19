@@ -7,7 +7,7 @@ from validators import require_min, require_non_empty # imports from validators.
 
 # Add a new component to the inventory.
 def add_component(inv: Inventory, comp: Component) -> None:
-    cid = require_non_empty(comp.component_id, "Component ID")
+    cid = comp.component_id
 
     if cid in inv.components:
         raise ValidationError(f"Component with ID '{cid}' already exists.")
@@ -16,7 +16,7 @@ def add_component(inv: Inventory, comp: Component) -> None:
     inv.add_log(cid, "ADD_COMPONENT", f"Added '{comp.name}'(qty={comp.quantity}), threshold={comp.threshold}.")
 
 # Retrieve a component by ID, raising error if not found.
-def get_component(inv: Inventory, component_id: str) -> Component:
+def get_component(inv: Inventory, component_id: int) -> Component:
     cid = require_non_empty(component_id, "Component ID")
     comp = inv.components.get(cid)
     if comp is None:
@@ -24,14 +24,14 @@ def get_component(inv: Inventory, component_id: str) -> Component:
     return comp
 
 # Update the status of a component.
-def update_status(inv: Inventory, component_id: str, new_status: str) -> None:
+def update_status(inv: Inventory, component_id: int, new_status: str) -> None:
     comp = get_component(inv, component_id)
     old_status = comp.status
     comp.status = new_status
     inv.add_log(comp.component_id, "UPDATE_STATUS", f"{old_status} -> {new_status}")
 
 # Adjust the quantity of a component.
-def adjust_quantity(inv: Inventory, component_id: str, delta: int, reason: str) -> None:
+def adjust_quantity(inv: Inventory, component_id: int, delta: int, reason: str) -> None:
     comp = get_component(inv, component_id)
     reason = require_non_empty(reason, "Reason")
     new_quantity = comp.quantity + delta

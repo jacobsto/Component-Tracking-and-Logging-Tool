@@ -1,12 +1,13 @@
 # JSON Storage for Inventory and Logs
 
 import json
+import os
 from pathlib import Path 
 from errors import StorageError # imports from errors.py
 from models import Inventory # imports from models.py
 
 # Path to the JSON database file.
-DB_FILE = Path("inventory_db.json")
+DB_FILE = Path.cwd()/ "inventory_db.json"
 
 # Load inventory from JSON file, or create new if not found.
 def load_inventory() -> Inventory:

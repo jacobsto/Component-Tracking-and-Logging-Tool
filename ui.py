@@ -74,9 +74,9 @@ def handle_add(inv: Inventory) -> None:
     try:
         name = ask_non_empty("Name: ", "Name")
         quantity = ask_int("Quantity (>=0): ", "Quantity", minimum=0)
-        threshold = ask_int("Reorder Threshold (>=0): ", "Reorderhreshold", minimum=0)
+        threshold = ask_int("Reorder Threshold (>=0): ", "Reorder threshold", minimum=0)
         status = choose_status()
-        tags = parse_tags(ask("Tags (comma-separated, optional): "))
+        tags = parse_tags(ask("Tags: "))
         
         comp = Component(name, quantity, threshold, status, tags)
         add_component(inv, comp)

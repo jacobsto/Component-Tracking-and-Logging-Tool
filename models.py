@@ -13,7 +13,7 @@ class Component:
     _last_id = 0
      
     # Initialize component with attributes.
-    def __init__(self, component_id, name, quantity, threshold, status, tags):
+    def __init__(self, name, quantity, threshold, status, tags):
         Component._last_id += 1
         self.component_id = Component._last_id
         self.name = name
@@ -93,7 +93,7 @@ class Inventory:
     # Initialize inventory with empty components and logs.
     def __init__(self):
         # Dict for fast lookup by component_id.
-        self.components: Dict[str, Component] = {}
+        self.components: Dict[int, Component] = {}
         self.logs: List[LogEntry] = []
 
     # Add a log entry to the inventory.

@@ -7,6 +7,7 @@ from errors import StorageError # imports from errors.py
 from storage import load_inventory, save_inventory # imports from storage.py
 from ui import print_menu, get_actions # imports from ui.py
 
+# Main application loop
 def main() -> None:
     try:
         inventory = load_inventory()
@@ -38,5 +39,5 @@ def main() -> None:
     except StorageError as ex:
         print(f"Error saving inventory: {ex}")
 
-    if __name__ == "__main__":
+if __name__ == "__main__":
         main()

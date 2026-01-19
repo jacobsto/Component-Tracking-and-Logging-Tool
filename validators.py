@@ -1,6 +1,6 @@
 # Validation helpers to keep UI and services clean.
 
-from errors import ValidationError # imports from error.py
+from errors import ValidationError # imports from errors.py
 from models import ALLOWED_STATUSES # imports from models.py
 
 # Ensure text is non-empty after trimming.
