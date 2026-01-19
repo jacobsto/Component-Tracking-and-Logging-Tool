@@ -56,7 +56,7 @@ class Component:
 class LogEntry:
 
     # Initialize log entry with attributes.
-    def __init__(self, timestamp: str, component_id: str, action: str, details: str):
+    def __init__(self, timestamp: str, component_id: int, action: str, details: str):
         self.timestamp = timestamp
         self.component_id = component_id
         self.action = action
@@ -64,7 +64,7 @@ class LogEntry:
 
     @staticmethod
     # Create a log entry with current timestamp.
-    def now(component_id: str, action: str, details: str) -> "LogEntry":
+    def now(component_id: int, action: str, details: str) -> "LogEntry":
         ts = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         return LogEntry(ts, component_id, action, details)
     
@@ -82,7 +82,7 @@ class LogEntry:
     def from_dict(data:dict) -> "LogEntry":
         return LogEntry(
             timestamp=data["timestamp"],
-            component_id=data["component_id"],
+            component_id=int(data["component_id"]),
             action=data["action"],
             details=data["details"],
         )
@@ -97,7 +97,7 @@ class Inventory:
         self.logs: List[LogEntry] = []
 
     # Add a log entry to the inventory.
-    def add_log(self, component_id: str, action: str, details: str) -> None:
+    def add_log(self, component_id: int, action: str, details: str) -> None:
         self.logs.append(LogEntry.now(component_id, action, details))   
 
     # Convert inventory to dictionary.
@@ -113,7 +113,8 @@ class Inventory:
         inv = Inventory()
         raw_components = data.get("components", {})
         for cid, cdict in raw_components.items():
-            inv.components[cid] = Component.from_dict(cdict)
+            cid_int = int(cid)
+            inv.components[cid_int] = Component.from_dict(cdict)
 
         raw_logs = data.get("logs", [])
         inv.logs = [LogEntry.from_dict(ld) for ld in raw_logs]

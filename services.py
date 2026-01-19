@@ -17,10 +17,15 @@ def add_component(inv: Inventory, comp: Component) -> None:
 
 # Retrieve a component by ID, raising error if not found.
 def get_component(inv: Inventory, component_id: int) -> Component:
-    cid = require_non_empty(component_id, "Component ID")
-    comp = inv.components.get(cid)
+    if component_id is None:
+        raise ValidationError("Component ID is required.")
+    if not isinstance(component_id, int):
+        raise ValidationError("Component ID must be an integer.")
+    if component_id <= 0:
+        raise ValidationError("Component ID must be a positive integer.")
+    comp = inv.components.get(component_id)
     if comp is None:
-        raise NotFoundError(f"Component with ID '{cid}' not found.")
+        raise NotFoundError(f"Component with ID '{component_id}' not found.")
     return comp
 
 # Update the status of a component.
