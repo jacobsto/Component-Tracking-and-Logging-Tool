@@ -1,0 +1,147 @@
+{
+  "components": {
+    "1": {
+      "component_id": 1,
+      "name": "Screw",
+      "quantity": 16,
+      "threshold": 10,
+      "status": "IN_STOCK",
+      "tags": [
+        "hardware"
+      ]
+    },
+    "2": {
+      "component_id": 2,
+      "name": "Bolt",
+      "quantity": 7,
+      "threshold": 5,
+      "status": "IN_USE",
+      "tags": [
+        "hardware"
+      ]
+    },
+    "3": {
+      "component_id": 3,
+      "name": "Washer",
+      "quantity": 3,
+      "threshold": 5,
+      "status": "IN_STOCK",
+      "tags": [
+        "hardware",
+        "critical"
+      ]
+    },
+    "4": {
+      "component_id": 4,
+      "name": "Bearing",
+      "quantity": 2,
+      "threshold": 4,
+      "status": "QUARANTINED",
+      "tags": [
+        "mechanical"
+      ]
+    },
+    "5": {
+      "component_id": 5,
+      "name": "Seal",
+      "quantity": 15,
+      "threshold": 5,
+      "status": "IN_STOCK",
+      "tags": []
+    },
+    "6": {
+      "component_id": 6,
+      "name": "Bracket",
+      "quantity": 1,
+      "threshold": 3,
+      "status": "IN_USE",
+      "tags": [
+        "structural"
+      ]
+    },
+    "7": {
+      "component_id": 7,
+      "name": "Circuit Board",
+      "quantity": 0,
+      "threshold": 2,
+      "status": "DISPOSED",
+      "tags": [
+        "electrical"
+      ]
+    }
+  },
+  "logs": [
+    {
+      "timestamp": "2026-01-11T21:13:16Z",
+      "component_id": 1,
+      "action": "ADD_COMPONENT",
+      "details": "Added 'Screw' (qty=19), threshold=10."
+    },
+    {
+      "timestamp": "2026-01-12T09:45:02Z",
+      "component_id": 2,
+      "action": "ADD_COMPONENT",
+      "details": "Added 'Bolt' (qty=7), threshold=5."
+    },
+    {
+      "timestamp": "2026-01-12T10:01:44Z",
+      "component_id": 3,
+      "action": "ADD_COMPONENT",
+      "details": "Added 'Washer' (qty=3), threshold=5."
+    },
+    {
+      "timestamp": "2026-01-12T11:18:09Z",
+      "component_id": 4,
+      "action": "ADD_COMPONENT",
+      "details": "Added 'Bearing' (qty=2), threshold=4."
+    },
+    {
+      "timestamp": "2026-01-13T14:32:55Z",
+      "component_id": 3,
+      "action": "ADJUST_QUANTITY",
+      "details": "5 -> 3 (-2) Reason: Assembly usage."
+    },
+    {
+      "timestamp": "2026-01-13T15:06:21Z",
+      "component_id": 6,
+      "action": "ADD_COMPONENT",
+      "details": "Added 'Bracket' (qty=1), threshold=3."
+    },
+    {
+      "timestamp": "2026-01-14T08:50:11Z",
+      "component_id": 4,
+      "action": "UPDATE_STATUS",
+      "details": "IN_STOCK -> QUARANTINED"
+    },
+    {
+      "timestamp": "2026-01-14T16:41:37Z",
+      "component_id": 2,
+      "action": "ADJUST_QUANTITY",
+      "details": "7 -> 5 (-2) Reason: Maintenance work."
+    },
+    {
+      "timestamp": "2026-01-15T09:12:08Z",
+      "component_id": 7,
+      "action": "ADD_COMPONENT",
+      "details": "Added 'Circuit Board' (qty=0), threshold=2."
+    },
+    {
+      "timestamp": "2026-01-15T09:45:33Z",
+      "component_id": 7,
+      "action": "UPDATE_STATUS",
+      "details": "IN_STOCK -> DISPOSED"
+    },
+    {
+      "timestamp": "2026-01-15T18:06:53Z",
+      "component_id": 6,
+      "action": "ADJUST_QUANTITY",
+      "details": "1 -> 0 (-1) Reason: Final installation."
+    },
+    {
+      "timestamp": "2026-01-19T17:51:17Z",
+      "component_id": 1,
+      "action": "ADJUST_QUANTITY",
+      "details": "19 -> 16 (-3) Reason: In use"
+    }
+  ]
+}
