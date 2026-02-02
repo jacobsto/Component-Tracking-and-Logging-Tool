@@ -7,40 +7,40 @@ from validators import require_min, require_non_empty # imports from validators.
 
 # Add a new component to the inventory.
 def add_component(inv: Inventory, comp: Component) -> None:
-    cid = comp.component_id
+    cid = comp.component_id # Get component ID
 
-    if cid in inv.components:
+    if cid in inv.components: # Check for existing ID
         raise ValidationError(f"Component with ID '{cid}' already exists.")
     
-    inv.components[cid] = comp
+    inv.components[cid] = comp # Add component to inventory
     inv.add_log(cid, "ADD_COMPONENT", f"Added '{comp.name}'(qty={comp.quantity}), threshold={comp.threshold}.")
 
 # Retrieve a component by ID, raising error if not found.
 def get_component(inv: Inventory, component_id: int) -> Component:
-    if component_id is None:
+    if component_id is None: # Empty ID check
         raise ValidationError("Component ID is required.")
-    if not isinstance(component_id, int):
+    if not isinstance(component_id, int): # Integer check
         raise ValidationError("Component ID must be an integer.")
-    if component_id <= 0:
+    if component_id <= 0: # Positive ID check
         raise ValidationError("Component ID must be a positive integer.")
     comp = inv.components.get(component_id)
-    if comp is None:
+    if comp is None: # Not found check
         raise NotFoundError(f"Component with ID '{component_id}' not found.")
     return comp
 
 # Update the status of a component.
 def update_status(inv: Inventory, component_id: int, new_status: str) -> None:
-    comp = get_component(inv, component_id)
-    old_status = comp.status
-    comp.status = new_status
+    comp = get_component(inv, component_id) # Retrieve component
+    old_status = comp.status # Store old status
+    comp.status = new_status # Update to new status
     inv.add_log(comp.component_id, "UPDATE_STATUS", f"{old_status} -> {new_status}")
 
 # Adjust the quantity of a component.
 def adjust_quantity(inv: Inventory, component_id: int, delta: int, reason: str) -> None:
     comp = get_component(inv, component_id)
-    reason = require_non_empty(reason, "Reason")
-    new_quantity = comp.quantity + delta
-    if new_quantity < 0:
+    reason = require_non_empty(reason, "Reason") # Record reason for change
+    new_quantity = comp.quantity + delta 
+    if new_quantity < 0: # Prevent negative quantity
         raise ValidationError("Quantity cannot be negative.")
     old_quantity = comp.quantity
     comp.quantity = new_quantity
@@ -49,25 +49,25 @@ def adjust_quantity(inv: Inventory, component_id: int, delta: int, reason: str) 
 
 # List all components in the inventory, sorted by ID.
 def list_components(inv: Inventory) -> list:
-    return [inv.components[cid] for cid in sorted(inv.components.keys())]
+    return [inv.components[cid] for cid in sorted(inv.components.keys())] # Sorted by ID
 
 # Get components needing replenishment, sorted by quantity.
 def replenishment_list(inv: Inventory) -> list:
-    needs = []
+    needs = [] # Components needing replenishment
     for comp in inv.components.values():
         if comp.needs_replenishment():
-            needs.append(comp)
+            needs.append(comp) # Add to needs list
     # Sort by lowest quantity first
     needs.sort(key=lambda c: c.quantity)
     return needs
 
 # Get recent log entries up to the specified limit.
 def recent_logs(inv: Inventory, limit: int) -> list:
-    limit = require_min(limit, 1, "Log limit")
+    limit = require_min(limit, 1, "Log limit") # Ensure limit is at least 1
     # Sort by recent first
     logs = inv.logs[-limit:]
-    logs.reverse()
-    lines = []
-    for l in logs:
+    logs.reverse() # Reverse to get most recent first
+    lines = [] 
+    for l in logs: # Format log entries
         lines.append(f"{l.timestamp} | {l.component_id} | {l.action} | {l.details}")
     return lines

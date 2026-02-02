@@ -32,67 +32,84 @@ def print_menu() -> None:
     print("0. Exit")
 
 # Prompt user for input.
-def ask(prompt: str) -> str:
-    return input(prompt).strip()
+def ask(prompt: str) -> str: # Get user input
+    return input(prompt).strip() # Trim whitespace
 
 # Prompt user for integer input with optional minimum constraint.
 def ask_int(prompt: str, field_name: str, minimum: int = None) -> int:
+    # Loop until valid integer input is received
     while True:
+        # Get raw input
         raw = ask(prompt)
         try:
+            # Convert to integer and validate minimum
             value = to_int(raw, field_name)
             if minimum is not None:
                 value = require_min(value, minimum, field_name)
             return value
+        # Handle validation errors
         except ValidationError as ex:
             print(f"Input error: {ex}")
 
+# Prompt user for non-empty input.
 def ask_non_empty(prompt: str, field_name: str) -> str:
     while True:
+        # Get raw input
         raw = ask(prompt)
         try:
+            # Validate non-empty
             return require_non_empty(raw, field_name)
+        # Handle validation errors
         except ValidationError as ex:
             print(f"Input error: {ex}")
 
 # Let user choose a status from allowed statuses.
 def choose_status() -> str:
     print("Select Status:")
+    # List allowed statuses
     for i, status in enumerate(ALLOWED_STATUSES, start=1):
         print(f"{i}. {status}")
 
+    # Get user choice
     choice = ask_int("Enter status number: ", "Status choice", minimum=1)
     
+    # Validate choice range
     while choice > len(ALLOWED_STATUSES):
         print(f"Invalid choice. Please select a number between 1 and {len(ALLOWED_STATUSES)}.")
         choice = ask_int("Enter status number: ", "Status choice", minimum=1)
 
+    # Return the selected status
     return ALLOWED_STATUSES[choice - 1]
 
 # Handle adding a new component.
 def handle_add(inv: Inventory) -> None:
+    # Get component details from user
     try:
         name = ask_non_empty("Name: ", "Name")
         quantity = ask_int("Quantity (>=0): ", "Quantity", minimum=0)
         threshold = ask_int("Reorder Threshold (>=0): ", "Reorder threshold", minimum=0)
-        status = choose_status()
+        status = choose_status() # Get status
         tags = parse_tags(ask("Tags: "))
         
+        # Create and add component
         comp = Component(name, quantity, threshold, status, tags)
         add_component(inv, comp)
         print(f"Component '{comp.component_id}' added successfully.")
+    # Handle application errors
     except AppError as ex:
         print(f"Error: {ex}")
 
 # Handle updating component status.
 def handle_status(inv: Inventory) -> None:
+    # Get component ID and new status from user
     try:
         cid = ask_int("Component ID: ", "Component ID", minimum=1)
         comp = get_component(inv, cid)
         print(f"Found Component: {comp.name} (current status: {comp.status})")
-        status = choose_status()
+        status = choose_status() # Get new status
         update_status(inv, cid, status)
         print(f"Component '{cid}' status updated to '{status}'.")
+    # Handle application errors
     except AppError as ex:
         print(f"Error: {ex}")
 
@@ -100,48 +117,55 @@ def handle_status(inv: Inventory) -> None:
 def handle_adjust(inv: Inventory) -> None:
     try:
         cid = ask_int("Component ID: ", "Component ID", minimum=1)
-        comp = get_component(inv, cid)
+        comp = get_component(inv, cid) # Retrieve component
         print(f"Found Component: {comp.name} (current quantity: {comp.quantity})")
-        delta = to_int(ask("Quantity Adjustment (positive or negative): "), "Quantity Adjustment")
-        reason = ask_non_empty("Reason for adjustment: ", "Reason")
-        adjust_quantity(inv, cid, delta, reason)
+        delta = to_int(ask("Quantity Adjustment (positive or negative): "), "Quantity Adjustment") # Get adjustment
+        reason = ask_non_empty("Reason for adjustment: ", "Reason") # Get reason
+        adjust_quantity(inv, cid, delta, reason) # Apply adjustment
         
+        # Check if replenishment needed
         comp = inv.components[cid]
         if comp.needs_replenishment():
             print(f"Warning: Component '{cid}' needs replenishment (qty={comp.quantity}, threshold={comp.threshold}).")
         else:
             print("Quantity updated successfully.")
+    # Handle application errors
     except AppError as ex:
         print(f"Error: {ex}")
 
 # Handle listing all components.
 def handle_list(inv: Inventory) -> None:
     comps = list_components(inv)
+    # Check if inventory is empty
     if not comps:
         print("No components in inventory.")
         return
     print("\nComponents in Inventory:")
+    # Display each component
     for c in comps:
-        flag = " **REPLENISH**" if c.needs_replenishment() else ""
-        tags = ",".join(c.tags) if c.tags else "-"
-        print(f"{c.component_id}: {c.name} | {c.quantity} | {c.threshold} | {c.status} | tags={tags}{flag}")
+        flag = " **REPLENISH**" if c.needs_replenishment() else "" # Flag if replenishment needed
+        tags = ",".join(c.tags) if c.tags else "-" # Format tags
+        print(f"{c.component_id}: {c.name} | {c.quantity} | {c.threshold} | {c.status} | tags={tags}{flag}") # Print component details
 
 # Handle showing replenishment list.
 def handle_replenishment(inv: Inventory) -> None:
     needs = replenishment_list(inv)
+    # Check if any components need replenishment
     if not needs:
         print("No components need replenishment.")
         return
     
     print ("\nComponents Needing Replenishment:")
+    # Display each component needing replenishment
     for c in needs:
-        tags = ",".join(c.tags) if c.tags else "-"
-        print(f"{c.component_id}: {c.name} | {c.quantity} <= {c.threshold}")
+        tags = ",".join(c.tags) if c.tags else "-" # Format tags
+        print(f"{c.component_id}: {c.name} | {c.quantity} <= {c.threshold}") # Print component details
 
 # Handle showing recent logs.
 def handle_logs(inv: Inventory) -> None:
-    limit = ask_int("How many recent logs to show? ", "Log limit", minimum=1)
+    limit = ask_int("How many recent logs to show? ", "Log limit", minimum=1)  # Get log limit
     logs = recent_logs(inv, limit)
+    # Check if there are any logs
     if not logs:
         print("No log entries found.")
         return
